@@ -4,6 +4,8 @@ import { useTodoStore } from "@/store/todo"
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react"
 import { AddTodoDialog } from "./add-todo-dialog"
 import { TodoItem } from "./todo-item"
+import useDebounce from "@/hooks/useDebounce"
+
 
 
 export enum Status {
@@ -12,8 +14,6 @@ export enum Status {
     DONE = "done",
     ARCHIVED = "archived"
 }
-
-
 
 
 export enum Filter {
@@ -38,6 +38,12 @@ export default function TodoBoard() {
     const init = useTodoStore((state) => state.init)
     const todos = useTodoStore((state) => state.todos)
     const add = useTodoStore((state) => state.add)
+    const [search, setSearch] = useState("")
+
+    const debounceValue = useDebounce(search, 400);
+
+    useEffect(() => {
+    }, [debounceValue]);
 
 
     const [new_todo, setTodoData] = useState<Todo>({
@@ -62,20 +68,23 @@ export default function TodoBoard() {
     };
 
     const filterByStatus = (filter: Filter) => {
-        return (Filter.ALL == filter) ? todos : todos.filter((todo: Todo) => todo.status == filter)
+        if(debounceValue == ""){
+            return ((Filter.ALL == filter) ? todos : todos.filter((todo: Todo) => todo.status == filter))
+        }
+        else{
+            return ((Filter.ALL == filter) ? todos : todos.filter((todo: Todo) => todo.status == filter)).filter(i => i.title.toLowerCase().includes(debounceValue.toLowerCase()))
+        }
     }
     useEffect(() => {
         init().then(() => {
             setFilter(Filter.ALL)
         }).catch()
 
-    }, [])
-
-
+    }, [])  
     return (
         <div className="w-full max-w-md">
             <div className="bg-white shadow-md rounded-lg px-3 py-2 mb-4">
-                
+
                 <div className=" text-gray-700 text-lg font-semibold py-2 px-2 flex justify-between">
                     Todos
                     <button onClick={() => { setOpen(true) }} type="button" className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm p-1.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -87,10 +96,11 @@ export default function TodoBoard() {
                     <div className="pl-2">
                         <svg className="fill-current text-gray-500 w-6 h-6" xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24">
-                            <path  d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
+                            <path d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
                         </svg>
                     </div>
                     <input
+                        onChange={(e) => { setSearch(e.target.value) }}
                         className="w-full rounded-md bg-gray-200 text-gray-700 leading-tight focus:outline-none py-2 px-2"
                         id="search" type="text" placeholder="Search todos" />
                 </div>
@@ -103,13 +113,13 @@ export default function TodoBoard() {
                     <li onClick={() => setFilter(Filter.ARCHIVED)} className={"cursor-pointer rounded-sm py-2 px-4  border-b-8 " + (tab == Filter.ARCHIVED ? "text-green-500 border-green-500" : "text-gray-500")}>Archived</li>
                 </ul>
                 <div className="overflow-y-auto h-[550px]" key={tab}>
-                    { filterByStatus(tab).map((todo: Todo, index) => { return <TodoItem key={index} todo={todo} /> })}
+                    {filterByStatus(tab).map((todo: Todo, index) => { return <TodoItem key={index} todo={todo} /> })}
 
                     {
-                        (filterByStatus(tab).length == 0) ? 
-                        <div className="text-center">
-                            No todos
-                        </div> : <></>
+                        (filterByStatus(tab).length == 0) ?
+                            <div className="text-center">
+                                No todos
+                            </div> : <></>
                     }
                 </div>
                 <AddTodoDialog open={open} onSubmit={handleSubmit} onClose={() => setOpen(false)} >
@@ -123,8 +133,8 @@ export default function TodoBoard() {
                     </div>
                     <div className="mb-5">
                         <label className="block mb-2 text-sm font-medium text-gray-900">Status</label>
-                        <select onChange={handleChange} name="status" className=" border text-sm w-full  rounded-lg  block  p-2.5  border-gray-600 text-gray-900 ">                        
-                            {STATUSES.map((o) => { return <option key={o.value}  value={o.value}>{o.title}</option> })}
+                        <select onChange={handleChange} name="status" className=" border text-sm w-full  rounded-lg  block  p-2.5  border-gray-600 text-gray-900 ">
+                            {STATUSES.map((o) => { return <option key={o.value} value={o.value}>{o.title}</option> })}
                         </select>
                     </div>
                 </AddTodoDialog>

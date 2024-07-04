@@ -1,11 +1,21 @@
 import useClickOutside from "@/hooks/useClickOutside";
 import { useRef, useState } from "react";
-import { STATUSES } from "./todo-board";
+import { STATUSES, Status } from "./todo-board";
 
 
 interface TodoItemActionMenuProps {
     status: string,
     updateStatus : (status: string) => Promise<void>
+}
+
+
+const keyToTitle = (status: string) => {
+    const kk = new Map<string,string>();
+
+    STATUSES.forEach((status)=>{
+        kk.set(status.value,status.title)
+    })
+    return kk.get(status)
 }
 
 export function TodoItemActionMenu({ status, updateStatus }: TodoItemActionMenuProps) {
@@ -25,7 +35,7 @@ export function TodoItemActionMenu({ status, updateStatus }: TodoItemActionMenuP
      
             <button onClick={() => { updateMenu(!menu) }}
                 className="select-none min-w-[100px] capitalize rounded-lg bg-gray-900 py-2 px-2 text-center align-middle font-sans text-xs font-bold text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
-                {status}
+                {keyToTitle(status)}
             </button>
             <ul ref={ref} className={"absolute z-10 min-w-[100px] overflow-auto rounded-md border border-blue-gray-50 bg-white p-2 font-sans text-sm font-normal text-blue-gray-500 shadow-lg shadow-blue-gray-500/10 focus:outline-none transition-opacity duration-300 " + (menu ? "opacity-1" : "pointer-events-none opacity-0")}>
                 {STATUSES.map((o) => {
