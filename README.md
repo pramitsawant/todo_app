@@ -28,7 +28,7 @@ PGADMIN_DEFAULT_PASSWORD="password"
     - [x] List of tasks with update and delete functionality
     - [x] Filter tasks by status ("All," "To Do," "In Progress," "Done")
 2. **User Experience**
-    - [ ] Form validation (title required)
+    - [x] Form validation (title required)
     - [x] Smooth, responsive interactions
     - [x] Use a modern front-end framework (React, Angular, Vue.js)
 3. **Styling**

@@ -6,8 +6,6 @@ import { AddTodoDialog } from "./add-todo-dialog"
 import { TodoItem } from "./todo-item"
 import useDebounce from "@/hooks/useDebounce"
 
-
-
 export enum Status {
     TODO = "todo",
     PROGRESS = "in_progress",
@@ -82,9 +80,8 @@ export default function TodoBoard() {
 
     }, [])  
     return (
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md ">
             <div className="bg-white shadow-md rounded-lg px-3 py-2 mb-4">
-
                 <div className=" text-gray-700 text-lg font-semibold py-2 px-2 flex justify-between">
                     Todos
                     <button onClick={() => { setOpen(true) }} type="button" className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm p-1.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -112,7 +109,7 @@ export default function TodoBoard() {
                     <li onClick={() => setFilter(Filter.DONE)} className={"cursor-pointer rounded-sm py-2 px-4  border-b-8 " + (tab == Filter.DONE ? "text-green-500 border-green-500" : "text-gray-500")}>Done</li>
                     <li onClick={() => setFilter(Filter.ARCHIVED)} className={"cursor-pointer rounded-sm py-2 px-4  border-b-8 " + (tab == Filter.ARCHIVED ? "text-green-500 border-green-500" : "text-gray-500")}>Archived</li>
                 </ul>
-                <div className="overflow-y-auto h-[550px]" key={tab}>
+                <div className="overflow-y-auto max-h-[550px] h-[550px]" key={tab}>
                     {filterByStatus(tab).map((todo: Todo, index) => { return <TodoItem key={index} todo={todo} /> })}
 
                     {
@@ -125,15 +122,15 @@ export default function TodoBoard() {
                 <AddTodoDialog open={open} onSubmit={handleSubmit} onClose={() => setOpen(false)} >
                     <div className="mb-5">
                         <label className="block mb-2 text-sm font-medium text-gray-900">Title</label>
-                        <input onChange={handleChange} type="text" name="title" className=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                        <input required onChange={handleChange} type="text" value={new_todo.title} name="title" className=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                     </div>
                     <div className="mb-5">
                         <label className="block mb-2 text-sm font-medium text-gray-900">Description</label>
-                        <input onChange={handleChange} type="text" name="description" className="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg  text-base focus:ring-blue-500 focus:border-blue-50  dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                        <input required onChange={handleChange} type="text" value={new_todo.description} name="description" className="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg  text-base focus:ring-blue-500 focus:border-blue-50  dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                     </div>
                     <div className="mb-5">
                         <label className="block mb-2 text-sm font-medium text-gray-900">Status</label>
-                        <select onChange={handleChange} name="status" className=" border text-sm w-full  rounded-lg  block  p-2.5  border-gray-600 text-gray-900 ">
+                        <select onChange={handleChange} name="status"  value={new_todo.status} className=" border text-sm w-full  rounded-lg  block  p-2.5  border-gray-600 text-gray-900 ">
                             {STATUSES.map((o) => { return <option key={o.value} value={o.value}>{o.title}</option> })}
                         </select>
                     </div>
